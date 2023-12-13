@@ -44,7 +44,20 @@
             };
 
             ndef.onreading = (event) => {
-                log("NDEF message read: " + event);
+                log("NDEF message read: " + event.message.records);
+                log("There is "+event.message.records.length+" records");
+                log("event serail number: "+event.serialNumber);
+                log("isTrusted: "+event.isTrusted);
+                log("Time Stamp: "+event.timeStamp)
+                const decoder = new TextDecoder();
+                for (const record of event.message.records) {
+                    log("Record type:  " + record.recordType);
+                    log("MIME type:    " + record.mediaType);
+                    if (record.data) {
+                        const arr = new Uint8Array(record.data.buffer);
+                        log("=== data ===\n" + arr.join(",") );
+                    }
+                }
             };
         } catch (error) {
             if (!hasNFCSupport) {
@@ -104,7 +117,11 @@
 </svelte:head>
 
 <section>
-    <button class="{hasNFCSupport? "": "disabled"}" type="button" on:click={readNDEF}>Toast</button>
+    <button
+        class={hasNFCSupport ? "" : "disabled"}
+        type="button"
+        on:click={readNDEF}>Toast</button
+    >
     <Toaster />
 </section>
 
